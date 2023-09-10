@@ -12,7 +12,11 @@ class martel {
 		this.logfile = logfile;
 	}
 	logtofile(cat: string, msg: string) {
-		fs.writeFileSync(this.logfile, `\n[${cat} ${new Date().toLocaleTimeString()}] ${msg}`, {flag: "a",});
+		fs.writeFileSync(
+			this.logfile,
+			`\n[${cat} ${new Date().toLocaleTimeString()}] ${msg}`,
+			{ flag: "a" },
+		);
 	}
 	log(errorlevel: number, name: string, content: string) {
 		conn.log(errorlevel, name, content);
@@ -29,6 +33,10 @@ class martel {
 	info(content: string) {
 		this.logtofile("INFO", content);
 		conn.info(content);
+	}
+	fatal(content: string) {
+		this.logtofile("FATAL", content);
+		conn.fatal(content);
 	}
 }
 let logfilename;
@@ -53,7 +61,7 @@ if (!fs.existsSync(path.join(__dirname, "../.env"))) {
 		);
 	} catch (err: unknown) {
 		console.error(err);
-		tell.warn("Could not create .env file. Exiting.");
+		tell.fatal("Could not create .env file. Exiting.");
 		process.exit(1);
 	}
 	tell.warn(".env file created! Please edit it and then restart.");
