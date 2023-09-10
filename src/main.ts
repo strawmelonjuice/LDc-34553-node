@@ -5,7 +5,7 @@ import path from "path";
 import { Logger, ILogObj } from "tslog";
 
 const conn: Logger<ILogObj> = new Logger();
-class martel {
+class logging {
 	logfile: string;
 
 	constructor(logfile: string) {
@@ -39,16 +39,17 @@ class martel {
 		conn.fatal(content);
 	}
 }
-let logfilename;
-let starttime;
+let logfilename: string;
+let starttime: Date;
 {
 	starttime = new Date(Date.now());
-	logfilename = `./logs/log_${starttime.getDate()}-${starttime.getMonth()}-${starttime.getFullYear()}_${starttime.getHours()}.${starttime.getMinutes()}.log`;
+	logfilename = `./logs/log_${starttime.getDate()}-${starttime.getMonth()}-${starttime.getFullYear()}.log`;
 }
 if (!fs.existsSync("./logs")) {
 	fs.mkdirSync("./logs");
 }
-const tell = new martel(logfilename);
+const tell = new logging(logfilename);
+tell.info(`Logging to '${logfilename}'.`);
 // const tell: Logger<ILogObj>=new Logger();
 if (!fs.existsSync(path.join(__dirname, "../.env"))) {
 	tell.warn(
@@ -96,16 +97,55 @@ app.use(express.json());
 app.use(require("body-parser").urlencoded({ extended: false }));
 
 app.use("/assets", express.static(path.join(__dirname, "../assets/public")));
+
 app.get("/", (req: Request, res: Response) => {
-	// res.send(preloadedresponses.html.index);
+	// res.send(HandlebarsAsHTML("./assets/hb/index.handlebars", vars));
 	res.send(preloadedresponses.html.index);
-	tell.log(0, "GET", "➡️  '/'");
+	tell.log(0, "OK", `[GET] ➡️✔️ '/${req.params.requrl}'`);
 });
-app.post("*", (req, res) => {
-	req.body;
-	res.json(req.body);
-	tell.log(0, "POST", `➡️  '${req.body.ask}'`);
-	// .log(req.body);
+
+// {
+// 	let anyerrors: boolean;
+// 	switch (req.params.requrl) {
+// 		case '':
+// 			// res.send(HandlebarsAsHTML("./assets/hb/index.handlebars", vars));
+// 			res.send(preloadedresponses.html.index);
+// 			anyerrors = false;
+// 			break;
+
+// 		default:
+// 			res.status(404);
+// 			res.send("Not sure what you need.");
+// 			anyerrors = true;
+// 			break;
+// 	}
+
+// 	if (anyerrors) {
+// 		tell.warn(`[GET] ➡️❌ '/${req.params.requrl}'`);
+// 	} else {
+// 		tell.log(0, "OK", `[GET] ➡️✔️ '/${req.params.requrl}'`);
+// 	}
+// }
+app.post("/api*", (req, res) => {
+	// req.body;
+	// res.json(req.body);
+	let anyerrors: boolean;
+	switch (req.body.ask) {
+		case "ping":
+			res.send("pong");
+			anyerrors = false;
+			break;
+		default:
+			res.status(400);
+			res.send("Not sure what you need.");
+			anyerrors = true;
+			break;
+	}
+	if (anyerrors) {
+		tell.warn(`[POST] 👎 '${req.body.ask}'@'/api' `);
+	} else {
+		tell.log(0, "OK", `[POST] 👍 '${req.body.ask}'@'/api'`);
+	}
 });
 
 app.listen(vars.port, () => {

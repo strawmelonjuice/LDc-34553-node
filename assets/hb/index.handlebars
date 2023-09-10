@@ -10,7 +10,7 @@
     Hello there! Served from port:
     {{port}}
     <script>
-      const body = { ask: "hoi", }; $.post("/", body, (data, status) => {
+      const body = { ask: "hoi", }; $.post("/api", body, (data, status) => {
       console.log(data); });
     </script>
   </body>
