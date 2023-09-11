@@ -118,9 +118,9 @@ app.get(
 		}
 
 		if (anyerrors) {
-			tell.warn(`[GET] ➡️❌ '${req.url}'`);
+			tell.warn(`[GET] ➡️❌  '${req.url}'`);
 		} else {
-			tell.log(0, "OK", `[GET] ➡️✔️ '${req.url}'`);
+			tell.log(0, "OK", `[GET] ➡️✔️  '${req.url}'`);
 		}
 	}
 );
@@ -140,9 +140,9 @@ app.post("/api*", (req, res) => {
 			break;
 	}
 	if (anyerrors) {
-		tell.warn(`[POST] 👎 '${req.body.ask}'@'/api' `);
+		tell.warn(`[POST] 👎  '${req.body.ask}'@'/api' `);
 	} else {
-		tell.log(0, "OK", `[POST] 👍 '${req.body.ask}'@'/api'`);
+		tell.log(0, "OK", `[POST] 👍  '${req.body.ask}'@'/api'`);
 	}
 });
 
