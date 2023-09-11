@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+const util = require('util');
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -98,34 +99,31 @@ app.use(require("body-parser").urlencoded({ extended: false }));
 
 app.use("/assets", express.static(path.join(__dirname, "../assets/public")));
 
-app.get("/", (req: Request, res: Response) => {
-	// res.send(HandlebarsAsHTML("./assets/hb/index.handlebars", vars));
-	res.send(preloadedresponses.html.index);
-	tell.log(0, "OK", `[GET] ➡️✔️ '/${req.params.requrl}'`);
-});
+app.get(
+	"/*",
+	(req: Request, res: Response) => {
+		let anyerrors: boolean;
+		switch (req.url) {
+			case '/':
+				// res.send(HandlebarsAsHTML("./assets/hb/index.handlebars", vars));
+				res.send(preloadedresponses.html.index);
+				anyerrors = false;
+				break;
 
-// {
-// 	let anyerrors: boolean;
-// 	switch (req.params.requrl) {
-// 		case '':
-// 			// res.send(HandlebarsAsHTML("./assets/hb/index.handlebars", vars));
-// 			res.send(preloadedresponses.html.index);
-// 			anyerrors = false;
-// 			break;
+			default:
+				res.status(404);
+				res.send("Not sure what you need.");
+				anyerrors = true;
+				break;
+		}
 
-// 		default:
-// 			res.status(404);
-// 			res.send("Not sure what you need.");
-// 			anyerrors = true;
-// 			break;
-// 	}
-
-// 	if (anyerrors) {
-// 		tell.warn(`[GET] ➡️❌ '/${req.params.requrl}'`);
-// 	} else {
-// 		tell.log(0, "OK", `[GET] ➡️✔️ '/${req.params.requrl}'`);
-// 	}
-// }
+		if (anyerrors) {
+			tell.warn(`[GET] ➡️❌ '${req.url}'`);
+		} else {
+			tell.log(0, "OK", `[GET] ➡️✔️ '${req.url}'`);
+		}
+	}
+);
 app.post("/api*", (req, res) => {
 	// req.body;
 	// res.json(req.body);
