@@ -50,7 +50,7 @@ if (!fs.existsSync("./logs")) {
 	fs.mkdirSync("./logs");
 }
 const tell = new logging(logfilename);
-tell.info(`Logging to '${logfilename}'.`);
+tell.info(`Logging to "${logfilename}".`);
 // const tell: Logger<ILogObj>=new Logger();
 if (!fs.existsSync(path.join(__dirname, "../.env"))) {
 	tell.warn(
@@ -72,7 +72,7 @@ if (!fs.existsSync(path.join(__dirname, "../.env"))) {
 	tell.log(
 		1,
 		"CONFIG",
-		`Loading configuration from '${path.join(__dirname, "../.env")}'.`,
+		`Loading configuration from "${path.join(__dirname, "../.env")}".`,
 	);
 }
 const Handlebars = require("handlebars");
@@ -118,9 +118,9 @@ app.get(
 		}
 
 		if (anyerrors) {
-			tell.warn(`[GET] ➡️❌  '${req.url}'`);
+			tell.warn(`[GET] ➡️❌  "${req.url}"`);
 		} else {
-			tell.log(0, "OK", `[GET] ➡️✔️  '${req.url}'`);
+			tell.log(0, "OK", `[GET] ➡️✔️  "${req.url}"`);
 		}
 	}
 );
@@ -140,9 +140,9 @@ app.post("/api*", (req, res) => {
 			break;
 	}
 	if (anyerrors) {
-		tell.warn(`[POST] 👎  '${req.body.ask}'@'/api' `);
+		tell.warn(`[POST] 👎  "${req.body.ask}"@"/api" `);
 	} else {
-		tell.log(0, "OK", `[POST] 👍  '${req.body.ask}'@'/api'`);
+		tell.log(0, "OK", `[POST] 👍  "${req.body.ask}"@"/api" `);
 	}
 });
 
