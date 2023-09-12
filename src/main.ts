@@ -118,9 +118,9 @@ app.get(
 		}
 
 		if (anyerrors) {
-			tell.warn(`[GET] ➡️❌  "${req.url}"`);
+			tell.warn(`[GET] ➡️❌   "${req.url}"`);
 		} else {
-			tell.log(0, "OK", `[GET] ➡️✔️  "${req.url}"`);
+			tell.log(0, "OK", `[GET] ➡️✔️   "${req.url}"`);
 		}
 	}
 );
@@ -130,6 +130,7 @@ app.post("/api*", (req, res) => {
 	let anyerrors: boolean;
 	switch (req.body.ask) {
 		case "ping":
+		case "hoi":
 			res.send("pong");
 			anyerrors = false;
 			break;
