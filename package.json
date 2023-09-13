@@ -13,11 +13,22 @@
   "author": "Strawmelonjuice Mar",
   "license": "ISC",
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/express-session": "^1.17.7",
+    "@types/mysql": "^2.15.21",
+    "axios": "^1.5.0",
+    "bcrypt": "^5.1.1",
     "biome": "^0.3.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "handlebars": "^4.7.8",
+    "mysql": "^2.18.1",
     "path": "^0.12.7",
+    "php-server": "^1.0.0",
+    "pino": "^8.15.1",
+    "pino-http": "^8.5.0",
     "tslog": "^4.9.2"
   },
   "devDependencies": {
