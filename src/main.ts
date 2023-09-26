@@ -136,80 +136,67 @@ db.connect(function (err) {
 		// req.body;
 		// res.json(req.body);
 		let anyerrors = true;
-		let uid;
-		if (typeof req.session.uid !== "number" || req.session.uid == null) {
-			if (req.body.ask === "ping") {
-				res.send("pong");
-				anyerrors = false;
-			}
-			const sql = `SELECT * FROM \`users\` WHERE \`username\` = "${req.body.username}"`;
-			db.query(sql, function (err, result) {
-				if (err) throw err;
-				const data = result[0];
-				const correctPasswordHashed = data.password;
-				const userIdIfCorrect = parseInt(data.id);
-				axios
-					.post(
-						`http://${PHPParserHTTP}`,
-						{
-							ask: "PasswordVerify",
-							password: req.body.password,
-							hashed_password: correctPasswordHashed,
-						},
-						{
-							headers: {
-								"Content-Type": "application/x-www-form-urlencoded",
+		if (req.body.ask === "ping") {
+			res.send("pong");
+			anyerrors = false;
+		} else {
+				const sql = `SELECT * FROM \`users\` WHERE \`username\` = "${req.body.username}"`;
+				db.query(sql, function (err, result) {
+					if (err) throw err;
+					const data = result[0];
+					const correctPasswordHashed = data.password;
+					const userIdIfCorrect = parseInt(data.id);
+					axios
+						.post(
+							`http://${PHPParserHTTP}`,
+							{
+								ask: "PasswordVerify",
+								password: req.body.password,
+								hashed_password: correctPasswordHashed,
 							},
-						},
-					)
-					.then(function (response) {
-						// console.log(response);
-						const passwordIsCorrectPHP = parseBool(response.data);
-						const passwordIsCorrectBcrypt = parseBool(
-							bcrypt.compareSync(req.body.password, correctPasswordHashed),
-						);
-						if (passwordIsCorrectPHP || passwordIsCorrectBcrypt) {
-							tell.silly(`${req.body.username}: Successful login!`);
-							uid = userIdIfCorrect;
-							req.session.uid = userIdIfCorrect;
-							anyerrors = false;
-							req.session.save();
-						}
-					})
-					.catch(function (error: Error) {
-						console.log(error);
-						res.status(401);
-						res.send("SHOO!");
-					});
-			});
-		} else {
-			uid = req.session.uid;
-		}
-		if (typeof uid === "number") {
-			switch (req.body.ask) {
-				case "ping":
-					res.send("pong");
-					anyerrors = false;
-					break;
-				case "hoi": {
-					const tablename: string = "userdata";
-					anyerrors = false;
-
-					AccountInteractions.get(uid, "settings", "focusmode");
-				}
-				break;
-				default: {
-					res.status(400);
-					res.send("Not sure what you need.");
-					anyerrors = true;
-				}
-				break;
-			}
-		}
-		if (anyerrors) {
-			tell.warn(`[POST] 👎  "${req.body.ask}"@"/api" `);
-		} else {
-			tell.log(0, "OK", `[POST] 👍  "${req.body.ask}"@"/api" `);
+							{
+								headers: {
+									"Content-Type": "application/x-www-form-urlencoded",
+								},
+							},
+						)
+						.then(function (response) {
+							// console.log(response);
+							const passwordIsCorrectPHP = parseBool(response.data);
+							const passwordIsCorrectBcrypt = parseBool(
+								bcrypt.compareSync(req.body.password, correctPasswordHashed),
+							);
+							if (passwordIsCorrectPHP || passwordIsCorrectBcrypt) {
+								const uid: number = userIdIfCorrect;
+								anyerrors = false;
+								req.session.save();
+								switch (req.body.ask) {
+									case "settings":
+										anyerrors = false;
+										const responso: string = AccountInteractions.get(uid, "settings", "", "json");
+										res.send(responso);
+										tell.log(0, "OK", `[POST] 👍  "${req.body.ask}"@"/api": ${req.body.username}: Successful authentication! -> ${uid}`);
+										break;
+									case "entries":
+										anyerrors = false;
+										res.send(AccountInteractions.get(uid, "entries", "", "json"));
+										tell.log(0, "OK", `[POST] 👍  "${req.body.ask}"@"/api": ${ req.body.username }: Successful authentication! -> ${ uid }`);
+										break;
+									default:
+										res.status(400);
+										console.log("Unknown ask!");
+										res.send("Not sure what you need.");
+										anyerrors = true;
+										break;
+								}
+							}
+						})
+						.catch(function (error: Error) {
+							tell.warn(`[POST] 👎  "${req.body.ask}"@"/api" :` + error);
+							res.status(401);
+							res.send("SHOO!");
+						});
+				});
 		}
 	});
 
